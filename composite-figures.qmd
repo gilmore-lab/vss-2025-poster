@@ -1,0 +1,92 @@
+---
+title: "composite-figures"
+format:
+  html: default
+  pdf: default
+engine: knitr
+---
+
+## Setup
+
+```{r}
+library(gridExtra)
+library(gtable)
+library(ggplot2)
+library(qrcode)
+library(cowplot)
+library(egg)
+```
+
+
+## QR Codes
+
+```{r}
+#| echo: false
+#| label: fig-vss-2025-poster-qr-codes
+#| layout-ncol: 2
+#| fig-cap: "QR Codes"
+#| fig-subcap: 
+#|   - "Project Site & Code"
+#|   - "Poster PDF"
+plot(qrcode::qr_code("https://gilmore-lab.github.io/"))
+plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
+```
+
+Let's make a composite.
+
+::: {.callout-warning}
+
+The following does not work.
+
+:::
+
+```{r}
+#| eval: false
+q1 <- qrcode::qr_code("https://gilmore-lab.github.io/")
+q2 <- qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity")
+
+q1 <- ggplotGrob(q1)
+q2 <- ggplotGrob(q1)
+g <- cbind(q1, q2)
+
+grid.newpage()
+grid.draw(g)
+
+png("include/generated/test-qrs.png", res=300)
+```
+
+But let's try the SVG output from `qrcode`.
+
+```{r}
+generate_svg(qr_code("https://gilmore-lab.github.io/"), filename = "include/generated/qr1.svg")
+```
+
+Let's try `cowplot`.
+
+```{r}
+q1 <- qrcode::qr_code("https://gilmore-lab.github.io/")
+q2 <- qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity")
+
+plot_grid(q1, q2, labels = c('A', 'B'), label_size = 12)
+```
+
+That did not work.
+
+Here are some tips from the vignettes (https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html) for the `egg` package:
+
+```{r}
+#| eval: false
+q1 <- qrcode::qr_code("https://gilmore-lab.github.io/")
+q2 <- qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity")
+
+grid.arrange(q1, q2, nrow = 1)
+```
+
+```{r}
+#| eval: false
+q1 <- qrcode::qr_code("https://gilmore-lab.github.io/")
+q2 <- qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity")
+
+ggarrange(q1, q2)
+```
+

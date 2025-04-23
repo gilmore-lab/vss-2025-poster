@@ -1,0 +1,11 @@
+project:
+  title: "vss-2025-poster"
+  
+
+knitr:
+  opts_chunk:
+    fig.path: include/generated/
+
+
+bibliography: include/bib/teller-acuity-cards.bib
+csl: include/bib/apa.csl

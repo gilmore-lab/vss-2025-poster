@@ -1,0 +1,112 @@
+---
+title: Synthesizing evidence about developmental patterns in human visual acuity as measured by Teller Acuity Cards
+format:
+  poster-typst: 
+    size: "60x36"
+    poster-authors: "R.O. Gilmore^1^, J. DiFulvio^1^, B. Beamer^1^, N. Cruz^1^"
+    departments: "^1^Department of Psychology, The Pennsylvania State University"
+    institution-logo: "include/img/penn-state-shield.jpg"
+    # univ_image: "include/img/unwatermarked-mt-nittany.jpg"
+    univ-logo-column-size: 4
+    univ-logo-scale: 75
+    title-column-size: 48
+    title-font-size: 100
+    authors-font-size: 52
+    univ-image-column-size: 6
+    univ-image-scale: 80
+    font-size: 52
+    footer-text: "Vision Sciences Society 2025 • St. Pete's Beach, FL"
+    footer-emails: "rog1@psu.edu"
+    footer-color: "a4c5e6"
+    footer-url: "Download this poster at:  https://gilmore-lab.github.io/vss-2025-poster"
+---
+
+# Motivation {-}
+
+Replication is a cornerstone of scientific rigor and a prerequisite for cumulative science.
+Direct replication is common in some subfields and topics, but less so in others.
+This project synthesized evidence from published research across a four decade period that employed a widely used measure of grating visual acuity (VA), Teller Acuity Cards (TAC; @Teller1986-oc). 
+We sought to capture findings about the development of VA in early childhood, harmonize them into an aggregated dataset, and share the dataset openly.
+The ultimate goal was to characterize how grating visual acuity develops.
+
+# Methods {-}
+
+To achive this, we did the following:
+
+1. Searched Google Scholar for the terms “teller acuity cards”, “visual acuity cards”, or “teller cards" and found *n*=751 papers.
+2. Determined which papers had full-text or PDFs available (*n*=433).
+3. Evaluated each paper to determine which had extractable data or had summaries of data presented elsewhere (*n*=27).
+4. Harmonized the data into a soon-to-be-shared Google sheet.
+5. Created visualizations and summaries of the data.
+
+```{r}
+#| echo: false
+#| label: fig-qr-code-project-site
+#| fig-cap: "QR Code for Project Site: https://gilmore-lab.github.io/visual-acuity"
+
+plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
+```
+
+\
+
+# Results: Sources synthesized {-}
+
+\
+
+|**Category** | *n*      | **Comments** |
+|----------------|:---:|----------------------|
+| Found in search | 751 | Terms: “teller acuity cards”, “visual acuity cards”, or “teller cards” |
+| Had PDFs or full text versions. | 433 | Continuing to seek additional papers |
+| No PDF/full text available | 318 | |
+| Extractable data | 27 | Includes data summarized by others for which no full-text version was available. |
+
+\
+\
+\
+\
+
+# Results: Typically developing children {-}
+
+![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/figs/fig-typical-group-by-age-paper-1.png){}
+
+\
+
+![Number of participants by eye(s) tested for papers reporting by-condition sample sizes.](include/figs/fig-typical-group-by-paper-n-subs-1.png)
+
+\
+\
+\
+\
+\
+\
+\
+
+![Best fitting (loess) functions to group acuity data by card type for children 3 and younger.](include/figs/fig-typical-group-by-age-less-than-3y-monoc-binoc-by-card-type-1.png)
+
+\
+
+![Standard deviation (in octaves) of group acuity estimates by mean (median) group acuity, eye(s) tested and card type.](include/figs/fig-typical-group-sd-by-threshold-1.png)
+
+\
+\
+\
+\
+
+# Results: Atypically developing children {-}
+
+![Atypical children caption.](include/figs/fig-atypical-group-by-age-1.png)
+
+# Conclusions {-}
+
+::: {.block fill="luma(210)" inset="5pt" radius="15pt" stroke="5pt + blue"}
+
+- Synthesizing evidence about core facets of human visual development is important and illuminating.
+
+- Variation in mean acuity thresholds at different ages and by card type pose challenges for norm or standard-setting.
+
+- Idiosyncratic practices for reporting data in published papers makes evidence synthesis challenging, even where researchers use a common method.
+
+- Future work will involve: 1. Acquiring papers that did not have full text versions available and incorporating their findings, and 2. Contacting individual researchers to seek unpublished datasets.
+
+- Vision scientists should adopt open data sharing practices more widely and should curate shared data in ways that make synthesis and aggregation easier.
+:::
