@@ -269,6 +269,8 @@ typ_group_df |>
   theme(legend.position = "none") 
 ```
 
+These *n*=`{r} length(unique(typ_group_df$author_year))` papers represent *n*=`{r} sum(typ_group_df$n_participants, na.rm = TRUE)` participant observations. The *n*'s per age group range are in [`{r} min(typ_group_df$n_participants, na.rm = TRUE)`, `{r} max(typ_group_df$n_participants, na.rm = TRUE)`], with a median of `{r} median(typ_group_df$n_participants, na.rm = TRUE)`.
+
 Here's one with a linear fit, points and no by-study lines.
 
 ```{r}

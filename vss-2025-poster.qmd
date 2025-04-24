@@ -72,9 +72,8 @@ plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
 
 ![Number of participants by eye(s) tested for papers reporting by-condition sample sizes.](include/generated/fig-typical-group-by-paper-n-subs-1.png)
 
-\
-\
-\
+Across the *n*=19 papers, *n*=5,212 participant observations are included. The *n*`s per age group are in [1, 84] with a median of *n*=20.
+
 \
 \
 \
