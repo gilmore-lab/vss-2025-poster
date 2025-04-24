@@ -25,7 +25,7 @@ format:
 
 Replication is a cornerstone of scientific rigor and a prerequisite for cumulative science.
 Direct replication is common in some subfields and topics, but less so in others.
-This project synthesized evidence from published research across a four decade period that employed a widely used measure of grating visual acuity (VA), Teller Acuity Cards (TAC; @Teller1986-oc). 
+This project synthesized evidence from published research across a four decade period that employed a widely used measure of grating visual acuity (VA), Teller [@Teller1986-oc] Acuity Cards (TAC). 
 We sought to capture findings about the development of VA in early childhood, harmonize them into an aggregated dataset, and share the dataset openly.
 The ultimate goal was to characterize how grating visual acuity develops.
 
@@ -66,7 +66,7 @@ plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
 
 # Results: Typically developing children {-}
 
-![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-1.png)
+![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-n-1.png)
 
 \
 

@@ -3,7 +3,7 @@ title: "Data and Figures"
 format: html
 params:
   data_dir: "data/csv"
-  update_data: TRUE
+  update_data: FALSE
   use_sysenv_creds: TRUE
   google_data_url: "https://docs.google.com/spreadsheets/d/1UFZkbh9oU4JHpYsrkDQcNmDyqD4J-qB74dhyMzIkqKs/edit?usp=sharing"
   data_fn: "by-paper.csv"
@@ -110,6 +110,15 @@ typ_group_df <-
 Rick Gilmore decided to take the mean of the age range reported in the [@Xiang2021-ry] data and create a new variable *strictly* for visualization purposes, `age_grp_rog`.
 :::
 
+We want to use the `binoc_monoc` variable as a column header, so let's recode it.
+
+```{r}
+typ_group_df <- typ_group_df |>
+  dplyr::mutate(binoc_monoc = dplyr::case_match(binoc_monoc, 
+                                                "binoc" ~ "binocular", "monoc" ~ "monocular"))
+```
+
+
 ```{r}
 #| label: fig-typical-group-by-age-paper
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards"
@@ -132,6 +141,31 @@ typ_group_df |>
   scale_y_continuous(limits = c(0, 30))
 ```
 
+Here's a version mandating the `viridis` color scale.
+
+```{r}
+#| label: fig-typical-group-by-age-paper-viridis
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards"
+
+typ_group_df |>
+  dplyr::mutate(author_date = paste0(author_first, "_", pub_year)) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = author_year
+  ) +
+  geom_point(aes(alpha = .5)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 30)) +
+  scale_colour_viridis_d()
+```
+
 Let's try a version where we highlight the individual studies *and* the group trends.
 
 ```{r}
@@ -139,7 +173,6 @@ Let's try a version where we highlight the individual studies *and* the group tr
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards."
 
 typ_group_df |>
-  #dplyr::mutate(author_date = paste0(author_first, "_", pub_year)) |>
   ggplot() +
   aes(
     x = age_grp_rog,
@@ -169,14 +202,44 @@ typ_group_df |>
     x = age_grp_rog,
     y = central_tendency_cyc_deg,
     color = author_year,
+    alpha = 0.3,
+    shape = card_type
   ) +
-  geom_point(aes(size = n_part_fact, alpha = .3)) +
+  geom_jitter(aes(size = n_participants/10), height = .1) +
   geom_line(aes(group = author_year), color = "gray") +
   geom_smooth(aes(group = 1), se = TRUE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("Mean acuity (cyc/deg)") +
   scale_y_continuous(limits = c(0, 30))  +
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+Weight the fit by `n_participants`.
+
+```{r}
+#| label: fig-typical-group-by-age-paper-group-trend-scaled-weight-n
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards."
+
+typ_group_df |>
+  mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = author_year,
+    alpha = 0.3,
+    shape = card_type
+  ) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/10)) +
+  geom_line(aes(group = author_year), color = "gray") +
+  geom_smooth(aes(group = 1), se = TRUE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  scale_y_continuous(limits = c(0, 30))  +
+  theme_classic() +
   theme(legend.position = "none")
 ```
 
@@ -200,9 +263,10 @@ typ_group_df |>
   geom_col() +
   facet_grid(cols = vars(binoc_monoc)) +
   coord_flip() +
-  theme(legend.position = "none") +
-  xlab("Source") +
-  ylab("n observations")
+  xlab("") +
+  ylab("observations") +
+  theme_classic() +
+  theme(legend.position = "none") 
 ```
 
 Here's one with a linear fit, points and no by-study lines.
@@ -242,9 +306,10 @@ typ_group_df |>
   aes(
     x = age_grp_rog,
     y = central_tendency_cyc_deg,
-    color = card_type
+    color = card_type,
+    shape = card_type
   ) +
-  geom_point() +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/10)) +
   geom_smooth(se = TRUE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
@@ -252,8 +317,40 @@ typ_group_df |>
   theme(legend.position = "bottom",
         legend.title = element_blank()) +
   scale_y_continuous(limits = c(0, 30)) +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_color_viridis_d() +
+  theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
 ```
+
+Now, weight the smoothed fit by `n_participants`.
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-weight-n
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+
+typ_group_df |>
+  dplyr::filter(age_grp_rog <= 36) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = card_type,
+    shape = card_type,
+  ) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
+  geom_smooth(se = TRUE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 30)) +
+  scale_color_viridis_d() +
+  theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
 
 #### Variability
 
@@ -305,7 +402,7 @@ typ_group_df_sd |>
   geom_point()
 ```
 
-Here is one with more styling.
+Here is one with more styling and a color-blind-safe palette.
 
 ```{r}
 #| label: fig-typical-group-sd-by-threshold
@@ -314,14 +411,45 @@ Here is one with more styling.
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = central_tendency_cyc_deg, y = sd, color = card_type) +
-  geom_point() +
-  geom_rug() +
+  aes(x = central_tendency_cyc_deg, 
+      y = sd, 
+      color = card_type,
+      shape = card_type,
+      size = n_participants/15,
+      alpha = .3) +
+  geom_jitter(width = .1, height = .1) +
   geom_smooth(se=FALSE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Acuity (cyc/deg)") +
   ylab("sd (octaves)") +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  scale_color_viridis_d() +
+  theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
+Weight the smoothed fit by `n_participants`.
+
+```{r}
+#| label: fig-typical-group-sd-by-threshold-weight-n
+#| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and the mean or median acuity in cyc/deg."
+
+typ_group_df_sd |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(x = central_tendency_cyc_deg, 
+      y = sd, 
+      color = card_type,
+      shape = card_type,
+      size = n_participants/15,
+      alpha = .3) +
+  geom_jitter(height = .1, width = .1) +
+  geom_smooth(se=FALSE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Acuity (cyc/deg)") +
+  ylab("sd (octaves)") +
+  scale_color_viridis_d() +
+  #theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
 ```
 
 ```{r}
@@ -331,16 +459,19 @@ typ_group_df_sd |>
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = age_grp_rog, y = sd, color = card_type) +
-  geom_point() +
-  geom_rug() +
-  geom_smooth(se=FALSE) +
+  aes(x = age_grp_rog, y = sd, 
+      color = card_type, 
+      shape = card_type,
+      size = n_participants/10,
+      alpha = .3) +
+  geom_jitter(height = .1, width = .1) +
+  geom_smooth(se=FALSE, weight = vars(n_participants)) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("sd (octaves)") +
+  theme_classic() +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
-
 
 #### Tabular summaries
 
