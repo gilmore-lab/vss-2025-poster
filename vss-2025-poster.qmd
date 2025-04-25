@@ -66,7 +66,7 @@ plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
 
 # Results: Typically developing children {-}
 
-![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-n-1.png)
+![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-weight-n-no-classic-1.png)
 
 \
 
@@ -80,14 +80,12 @@ Across the *n*=19 papers, *n*=5,212 participant observations are included. The *
 \
 \
 
-![Best fitting (loess) functions to group acuity data by card type for children 3 and younger.](include/generated/fig-typical-group-by-age-less-than-3y-monoc-binoc-by-card-type-1.png)
+![Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits.](include/generated/fig-typical-group-LT3y-by-card-type-weight-n-no-classic-1.png)
 
 \
 
-![Standard deviation (in octaves) of group acuity estimates by mean (median) group acuity, eye(s) tested and card type.](include/generated/fig-typical-group-sd-by-age-1.png)
+![Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (purple circles) and TAC-II (yellow triangles).](include/generated/fig-typical-group-sd-by-age-default-1.png)
 
-\
-\
 \
 \
 
@@ -97,7 +95,7 @@ Across the *n*=19 papers, *n*=5,212 participant observations are included. The *
 
 # Conclusions {-}
 
-::: {.block fill="luma(210)" inset="5pt" radius="15pt" stroke="5pt + blue"}
+::: {.block fill="luma(210)" inset="10pt" radius="15pt" stroke="5pt + blue"}
 
 - Synthesizing evidence about core facets of human visual development is important and illuminating.
 
@@ -108,4 +106,5 @@ Across the *n*=19 papers, *n*=5,212 participant observations are included. The *
 - Future work will involve: 1. Acquiring papers that did not have full text versions available and incorporating their findings, and 2. Contacting individual researchers to seek unpublished datasets.
 
 - Vision scientists should adopt open data sharing practices more widely and should curate shared data in ways that make synthesis and aggregation easier.
+
 :::

@@ -177,11 +177,16 @@ typ_group_df |>
 
 :::
 
+::: {.panel-tabset}
+
+## Indiv + Trend
 Let's try a version where we highlight the individual studies *and* the group trends.
 
 ```{r}
 #| label: fig-typical-group-by-age-paper-group-trend
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards."
+#| message: false
+#| warning: false
 
 typ_group_df |>
   ggplot() +
@@ -200,11 +205,16 @@ typ_group_df |>
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
+## Scale point size
+
 Can we scale the points by the n's?
 
 ```{r}
 #| label: fig-typical-group-by-age-paper-group-trend-scaled-n
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards."
+#| message: false
+#| warning: false
+
 
 typ_group_df |>
   mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
@@ -227,11 +237,15 @@ typ_group_df |>
   theme(legend.position = "none")
 ```
 
+## Weighted fit
+
 Weight the fit by `n_participants`.
 
 ```{r}
 #| label: fig-typical-group-by-age-paper-group-trend-scaled-weight-n
 #| fig-cap: "Developmental time course of grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards by study. TAC-I cards (circles); TAC-II (triangles)."
+#| message: false
+#| warning: false
 
 typ_group_df |>
   mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
@@ -254,10 +268,50 @@ typ_group_df |>
   theme(legend.position = "none")
 ```
 
-Generate a comparable figure with the n's.
+
+## No theme_classic
+
+Add back the gray background.
 
 ```{r}
-#| label: fig-typical-group-by-paper-n-subs
+#| label: fig-typical-group-by-age-paper-group-trend-scaled-weight-n-no-classic
+#| fig-cap: "Developmental time course of grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards by study and card-type: TAC-I (circles), TAC-II (triangles)."
+#| message: false
+#| warning: false
+
+typ_group_df |>
+  mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = author_year,
+    alpha = 0.3,
+    shape = card_type
+  ) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/10)) +
+  geom_line(aes(group = author_year), color = "gray") +
+  geom_smooth(aes(group = 1), se = TRUE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Acuity (cyc/deg)") +
+  scale_y_continuous(limits = c(0, 30))  +
+  theme(legend.position = "none")
+```
+
+:::
+
+Generate a comparable figure with the n's.
+
+::: {.panel-tabset}
+
+## Classic
+
+```{r}
+#| label: fig-typical-group-by-paper-n-subs-classic
+#| #| message: false
+#| warning: false
+
 library(forcats)
 library(dplyr)
 typ_group_df |>
@@ -280,13 +334,43 @@ typ_group_df |>
   theme(legend.position = "none") 
 ```
 
-These *n*=`{r} length(unique(typ_group_df$author_year))` papers represent *n*=`{r} sum(typ_group_df$n_participants, na.rm = TRUE)` participant observations. The *n*'s per age group range are in [`{r} min(typ_group_df$n_participants, na.rm = TRUE)`, `{r} max(typ_group_df$n_participants, na.rm = TRUE)`], with a median of `{r} median(typ_group_df$n_participants, na.rm = TRUE)`.
+## Default
 
-Here's one with a linear fit, points and no by-study lines.
+```{r}
+#| label: fig-typical-group-by-paper-n-subs
+#| #| message: false
+#| warning: false
+
+library(forcats)
+library(dplyr)
+typ_group_df |>
+  filter(!is.na(n_participants)) |>
+  group_by(binoc_monoc, author_year) |>
+  summarize(n_subs = sum(n_participants)) |>
+  mutate(author_year = fct_reorder(author_year, n_subs)) |>
+  ggplot() +
+  aes(
+    x = author_year,
+    y = n_subs,
+    fill = author_year
+  ) +
+  geom_col() +
+  facet_grid(cols = vars(binoc_monoc)) +
+  coord_flip() +
+  xlab("") +
+  ylab("observations") +
+  #theme_classic() +
+  theme(legend.position = "none") 
+```
+
+:::
+
+These *n*=`{r} length(unique(typ_group_df$author_year))` papers represent *n*=`{r} sum(typ_group_df$n_participants, na.rm = TRUE)` participant observations. The *n*'s per age group range are in [`{r} min(typ_group_df$n_participants, na.rm = TRUE)`, `{r} max(typ_group_df$n_participants, na.rm = TRUE)`], with a median of `{r} median(typ_group_df$n_participants, na.rm = TRUE)`.
 
 ```{r}
 #| label: fig-typical-group-by-age
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards"
+#| eval: false
 
 typ_group_df |>
   dplyr::mutate(author_date = paste0(author_first, "_", pub_year)) |>
@@ -308,9 +392,11 @@ typ_group_df |>
 
 ::: {.panel-tabset}
 
-## Unweighted
+##### Three and younger
 
-Let's limit consideration to children below three and focus on `card_type`.
+::: {.panel-tabset}
+
+## Unweighted Viridis
 
 ```{r}
 #| label: fig-typical-group-LT3y-by-card-type
@@ -339,13 +425,11 @@ typ_group_df |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
-## Weighted
-
-Now, weight the smoothed fit by `n_participants`.
+## Weighted - Viridis
 
 ```{r}
 #| label: fig-typical-group-LT3y-by-card-type-weight-n
-#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits."
 
 typ_group_df |>
   dplyr::filter(age_grp_rog <= 36) |>
@@ -370,11 +454,13 @@ typ_group_df |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
+Now, weight the smoothed fit by `n_participants`.
+
 ## Gray bkgnd
 
 ```{r}
 #| label: fig-typical-group-LT3y-by-card-type-weight-n-no-classic
-#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits."
 
 typ_group_df |>
   dplyr::filter(age_grp_rog <= 36) |>
@@ -465,6 +551,10 @@ c(a,b,k1)
 
 Many of the studies report variability in terms of octaves.
 
+::: {.panel-tabset}
+
+## SD by acuity
+
 ```{r}
 #| label: fig-typical-group-sd-by-acuity
 #| fig-cap: "Relationship between the standard deviation (SD) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards."
@@ -482,6 +572,8 @@ typ_group_df_sd |>
 
 Here is one with more styling and a color-blind-safe palette.
 
+## Viridis
+
 ```{r}
 #| label: fig-typical-group-sd-by-threshold
 #| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and the mean or median acuity in cyc/deg."
@@ -493,9 +585,8 @@ typ_group_df_sd |>
       y = sd, 
       color = card_type,
       shape = card_type,
-      size = n_participants/15,
       alpha = .3) +
-  geom_jitter(width = .1, height = .1) +
+  geom_jitter(width = .1, height = .1, aes(size = n_participants/20)) +
   geom_smooth(se=FALSE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Acuity (cyc/deg)") +
@@ -505,7 +596,7 @@ typ_group_df_sd |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
-Weight the smoothed fit by `n_participants`.
+## Weighted fit
 
 ```{r}
 #| label: fig-typical-group-sd-by-threshold-weight-n
@@ -518,9 +609,8 @@ typ_group_df_sd |>
       y = sd, 
       color = card_type,
       shape = card_type,
-      size = n_participants/15,
       alpha = .3) +
-  geom_jitter(height = .1, width = .1) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
   geom_smooth(se=FALSE, weight = vars(n_participants)) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Acuity (cyc/deg)") +
@@ -530,8 +620,10 @@ typ_group_df_sd |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
+## By age
+
 ```{r}
-#| label: fig-typical-group-sd-by-age
+#| label: fig-typical-group-sd-by-age-classic
 #| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months."
 
 typ_group_df_sd |>
@@ -540,16 +632,41 @@ typ_group_df_sd |>
   aes(x = age_grp_rog, y = sd, 
       color = card_type, 
       shape = card_type,
-      size = n_participants/10,
       alpha = .3) +
-  geom_jitter(height = .1, width = .1) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
   geom_smooth(se=FALSE, weight = vars(n_participants)) +
+  scale_color_viridis_d() +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("sd (octaves)") +
   theme_classic() +
-  theme(legend.position = "bottom", legend.title = element_blank())
+  theme(legend.position = "none", legend.title = element_blank())
 ```
+
+## Default style
+
+```{r}
+#| label: fig-typical-group-sd-by-age-default
+#| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (purple circles) and TAC-II (yellow triangles)."
+
+typ_group_df_sd |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(x = age_grp_rog, y = sd, 
+      color = card_type, 
+      shape = card_type,
+      alpha = .3) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
+  geom_smooth(se=FALSE, weight = vars(n_participants)) +
+  scale_color_viridis_d() +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("sd (octaves)") +
+  #theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
+:::
 
 #### Tabular summaries
 
