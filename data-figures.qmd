@@ -1,6 +1,9 @@
 ---
 title: "Data and Figures"
-format: html
+format: 
+  html:
+    code-fold: true
+    code-summary: "Show code"
 params:
   data_dir: "data/csv"
   update_data: FALSE
@@ -119,6 +122,10 @@ typ_group_df <- typ_group_df |>
 ```
 
 
+::: {.panel-tabset}
+
+## Standard colors
+
 ```{r}
 #| label: fig-typical-group-by-age-paper
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards"
@@ -140,6 +147,8 @@ typ_group_df |>
         legend.title = element_blank()) +
   scale_y_continuous(limits = c(0, 30))
 ```
+
+## Viridis
 
 Here's a version mandating the `viridis` color scale.
 
@@ -165,6 +174,8 @@ typ_group_df |>
   scale_y_continuous(limits = c(0, 30)) +
   scale_colour_viridis_d()
 ```
+
+:::
 
 Let's try a version where we highlight the individual studies *and* the group trends.
 
@@ -220,7 +231,7 @@ Weight the fit by `n_participants`.
 
 ```{r}
 #| label: fig-typical-group-by-age-paper-group-trend-scaled-weight-n
-#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards."
+#| fig-cap: "Developmental time course of grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards by study. TAC-I cards (circles); TAC-II (triangles)."
 
 typ_group_df |>
   mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
@@ -295,6 +306,10 @@ typ_group_df |>
     theme_classic()
 ```
 
+::: {.panel-tabset}
+
+## Unweighted
+
 Let's limit consideration to children below three and focus on `card_type`.
 
 ```{r}
@@ -323,6 +338,8 @@ typ_group_df |>
   theme_classic() +
   theme(legend.position = "none", legend.title = element_blank())
 ```
+
+## Weighted
 
 Now, weight the smoothed fit by `n_participants`.
 
@@ -353,6 +370,65 @@ typ_group_df |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
+## Gray bkgnd
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-weight-n-no-classic
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+
+typ_group_df |>
+  dplyr::filter(age_grp_rog <= 36) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = card_type,
+    shape = card_type,
+  ) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
+  geom_smooth(se = TRUE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 30)) +
+  scale_color_viridis_d() +
+  #theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
+## Gray bkgnd + No Viridis
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-weight-n-no-classic-no-viridis
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+
+typ_group_df |>
+  dplyr::filter(age_grp_rog <= 36) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = central_tendency_cyc_deg,
+    color = card_type,
+    shape = card_type,
+  ) +
+  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
+  geom_smooth(se = TRUE, weight = vars(n_participants)) +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 30)) +
+  #scale_color_viridis_d() +
+  #theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
+:::
 
 #### Variability
 
@@ -534,6 +610,10 @@ atyp_group_df <- atyp_group_df |>
                                               logMAR_to_cyc_per_deg(mean_acuity)))
 ```
 
+::: {.panel-tabset}
+
+## By condition
+
 ```{r}
 #| label: fig-atypical-group-by-age
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for atypically developing children as assessed by Teller Acuity Cards"
@@ -546,13 +626,15 @@ atyp_group_df |>
     color = eye
   ) +
   geom_point() +
-  geom_smooth(se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_grid(cols = vars(condition)) +
   xlab("Age (mos)") +
   ylab("Mean acuity (cyc/deg)") +
   theme(legend.position = "bottom") +
   scale_y_continuous(limits = c(0, 30))
 ```
+
+## By eye
 
 Let's try one by eye.
 
@@ -568,14 +650,15 @@ atyp_group_df |>
     color = condition
   ) +
   geom_point() +
-  geom_smooth(se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_grid(cols = vars(eye)) +
   xlab("Age (mos)") +
-  ylab("Mean acuity (cyc/deg)") +
+  ylab("Acuity (cyc/deg)") +
   theme(legend.position = "bottom") +
   scale_y_continuous(limits = c(0, 30))
 ```
 
+:::
 
 ### Typical Individual
 
@@ -607,5 +690,5 @@ typ_indiv_df |>
   ylab("Acuity (cyc/deg)") +
   theme(legend.position = "bottom") +
   scale_y_continuous(limits = c(0, 30)) +
-  scale_x_continuous(limits = c(0, 50))
+  scale_x_continuous(limits = c(0, 15))
 ```
