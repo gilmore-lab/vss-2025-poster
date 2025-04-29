@@ -4,7 +4,7 @@ format:
   poster-typst: 
     size: "60x36"
     poster-authors: "R.O. Gilmore^1^, J. DiFulvio^1^, B. Beamer^1^, N. Cruz^1^"
-    departments: "^1^Department of Psychology, The Pennsylvania State University"
+    departments: "^1^Department of Psychology, The Pennsylvania State University, University Park, PA"
     institution-logo: "include/img/penn-state-shield.jpg"
     # univ_image: "include/img/unwatermarked-mt-nittany.jpg"
     univ-logo-column-size: 4
@@ -91,7 +91,7 @@ Across the *n*=19 papers, *n*=5,212 participant observations are included. The *
 
 # Results: Atypically developing children {-}
 
-![Atypical children caption.](include/figs/fig-atypical-group-by-age-1.png)
+![Atypical children caption.](include/generated/fig-atypical-group-by-age-eye-1.png)
 
 # Conclusions {-}
 

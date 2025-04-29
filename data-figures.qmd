@@ -6,7 +6,7 @@ format:
     code-summary: "Show code"
 params:
   data_dir: "data/csv"
-  update_data: FALSE
+  update_data: TRUE
   use_sysenv_creds: TRUE
   google_data_url: "https://docs.google.com/spreadsheets/d/1UFZkbh9oU4JHpYsrkDQcNmDyqD4J-qB74dhyMzIkqKs/edit?usp=sharing"
   data_fn: "by-paper.csv"
@@ -51,7 +51,8 @@ import_save_TAC <- function(sheet_name = "typical_group",
                             csv_name = "typical_group.csv") {
   
   this_sheet <- googlesheets4::read_sheet(ss = params$google_data_url,
-                            sheet = sheet_name)
+                            sheet = sheet_name,
+                            col_types = "c")
   out_fn <- file.path(params$data_dir, csv_name)
   readr::write_csv(this_sheet, out_fn)
   message("Data updated: ", out_fn)
@@ -106,7 +107,11 @@ We'll create visualizations for each group of data separately.
 ```{r}
 #| label: import-typical-group
 typ_group_df <-
-  readr::read_csv(file.path(params$data_dir, "typical_group.csv"), show_col_types = FALSE)
+  readr::read_csv(
+    file.path(params$data_dir, "typical_group.csv"),
+    col_types = cols(.default = "c"),
+    show_col_types = FALSE
+  )
 ```
 
 ::: {.callout-important}
@@ -117,8 +122,17 @@ We want to use the `binoc_monoc` variable as a column header, so let's recode it
 
 ```{r}
 typ_group_df <- typ_group_df |>
-  dplyr::mutate(binoc_monoc = dplyr::case_match(binoc_monoc, 
-                                                "binoc" ~ "binocular", "monoc" ~ "monocular"))
+  dplyr::mutate(
+    binoc_monoc = dplyr::case_match(binoc_monoc, "binoc" ~ "binocular", "monoc" ~ "monocular"),
+    acuity = if_else(
+      acuity_units == "snellen",
+      as.numeric(acuity) * 30,
+      as.numeric(acuity)
+    ),
+    age_grp_rog = as.numeric(age_grp_rog),
+    n_participants = as.numeric(n_participants),
+    sd = as.numeric(sd)
+  )
 ```
 
 
@@ -131,11 +145,10 @@ typ_group_df <- typ_group_df |>
 #| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by Teller Acuity Cards"
 
 typ_group_df |>
-  dplyr::mutate(author_date = paste0(author_first, "_", pub_year)) |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year
   ) +
   geom_point() +
@@ -161,7 +174,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year
   ) +
   geom_point(aes(alpha = .5)) +
@@ -192,7 +205,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year
   ) +
   geom_point() +
@@ -215,13 +228,12 @@ Can we scale the points by the n's?
 #| message: false
 #| warning: false
 
-
 typ_group_df |>
   mutate(n_part_fact = cut(n_participants, breaks = c(0, 1, 5, 10, 20, 30, 40, 50))) |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year,
     alpha = 0.3,
     shape = card_type
@@ -252,14 +264,14 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year,
     alpha = 0.3,
     shape = card_type
   ) +
   geom_jitter(height = .1, width = .1, aes(size = n_participants/10)) +
   geom_line(aes(group = author_year), color = "gray") +
-  geom_smooth(aes(group = 1), se = TRUE, weight = vars(n_participants)) +
+  geom_smooth(aes(group = 1), se = TRUE, weight = vars(n_participants), na.rm = TRUE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("Mean acuity (cyc/deg)") +
@@ -284,7 +296,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = author_year,
     alpha = 0.3,
     shape = card_type
@@ -373,11 +385,10 @@ These *n*=`{r} length(unique(typ_group_df$author_year))` papers represent *n*=`{
 #| eval: false
 
 typ_group_df |>
-  dplyr::mutate(author_date = paste0(author_first, "_", pub_year)) |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
   ) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
@@ -408,7 +419,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = card_type,
     shape = card_type
   ) +
@@ -437,12 +448,12 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = card_type,
     shape = card_type,
   ) +
   geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
-  geom_smooth(se = TRUE, weight = vars(n_participants)) +
+  geom_smooth(se = TRUE, weight = vars(n_participants), na.rm = TRUE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("Mean acuity (cyc/deg)") +
@@ -468,7 +479,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = card_type,
     shape = card_type,
   ) +
@@ -497,7 +508,7 @@ typ_group_df |>
   ggplot() +
   aes(
     x = age_grp_rog,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = card_type,
     shape = card_type,
   ) +
@@ -521,6 +532,8 @@ typ_group_df |>
 We need helper functions for converting standard deviation into consistent units.
 
 ```{r}
+#| eval: false
+#| 
 sd_from_conf_bound <- function(mean, bound, n, p = .95) {
   ci_length <- abs(mean-bound)
   if (p == .95) {
@@ -566,7 +579,7 @@ typ_group_df_sd <- typ_group_df |>
 
 typ_group_df_sd |>
   ggplot() +
-  aes(x = central_tendency_cyc_deg, y = sd) +
+  aes(x = acuity, y = sd) +
   geom_point()
 ```
 
@@ -581,7 +594,7 @@ Here is one with more styling and a color-blind-safe palette.
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = central_tendency_cyc_deg, 
+  aes(x = acuity, 
       y = sd, 
       color = card_type,
       shape = card_type,
@@ -605,7 +618,7 @@ typ_group_df_sd |>
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = central_tendency_cyc_deg, 
+  aes(x = acuity, 
       y = sd, 
       color = card_type,
       shape = card_type,
@@ -657,7 +670,7 @@ typ_group_df_sd |>
       shape = card_type,
       alpha = .3) +
   geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
-  geom_smooth(se=FALSE, weight = vars(n_participants)) +
+  geom_smooth(se=FALSE, weight = vars(n_participants), na.rm = TRUE) +
   scale_color_viridis_d() +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
@@ -723,8 +736,8 @@ logMAR_to_cyc_per_deg <- function(logMARmin) {
 }
 
 atyp_group_df <- atyp_group_df |>
-  dplyr::mutate(central_tendency_cyc_deg = if_else(acuity_units == "cyc_deg", mean_acuity, 
-                                              logMAR_to_cyc_per_deg(mean_acuity)))
+  dplyr::mutate(acuity = if_else(acuity_units == "cyc_deg", acuity, 
+                                              logMAR_to_cyc_per_deg(acuity)))
 ```
 
 ::: {.panel-tabset}
@@ -739,7 +752,7 @@ atyp_group_df |>
   ggplot() +
   aes(
     x = age_mos,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = eye
   ) +
   geom_point() +
@@ -763,7 +776,7 @@ atyp_group_df |>
   ggplot() +
   aes(
     x = age_mos,
-    y = central_tendency_cyc_deg,
+    y = acuity,
     color = condition
   ) +
   geom_point() +
@@ -777,15 +790,74 @@ atyp_group_df |>
 
 :::
 
+### Atypical individual
+
+```{r}
+snellen_to_cpd <- function(snellen) {
+  snellen_fraction <- as.numeric(snellen)
+}
+```
+
+```{r}
+#| label: import-atypical-individual
+
+atyp_indiv_df <- readr::read_csv(file.path(params$data_dir, "atypical_indiv.csv"),
+                                 col_types = cols(.default = "c"),
+                                 show_col_types = FALSE)
+str(atyp_indiv_df)
+```
+
+#### Clean
+
+```{r}
+#| label: clean-atyp-indiv
+
+atyp_indiv_df <- atyp_indiv_df |>
+  dplyr::mutate(age_mos = as.numeric(age_mos),
+                acuity = if_else(acuity_units == "snellen", as.numeric(acuity)*30, as.numeric(acuity)))
+
+```
+
+```{r}
+#| label: fig-atypical-indiv-by-age-eye
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for atypically developing children as assessed by Teller Acuity Cards"
+
+atyp_indiv_df |>
+  dplyr::filter(age_mos <= 36) |>
+  ggplot() +
+  aes(
+    x = age_mos,
+    y = acuity,
+    color = BIBTEXKEY
+  ) +
+  geom_point() +
+  #geom_smooth(method = "lm", se = FALSE) +
+  facet_grid(cols = vars(eye)) +
+  xlab("Age (mos)") +
+  ylab("Acuity (cyc/deg)") +
+  theme(legend.position = "bottom") 
+```
+
 ### Typical Individual
 
 ```{r}
 #| label: import-typical-indiv
 
 typ_indiv_df <-
-  readr::read_csv(file.path(params$data_dir, "typical_indiv.csv"), show_col_types = FALSE)
+  readr::read_csv(file.path(params$data_dir, "typical_indiv.csv"),
+                  col_types = cols(.default = "c"),
+                                 show_col_types = FALSE)
 str(atyp_group_df)
 ```
+
+```{r}
+#| label: clean-typical-indiv
+
+typ_indiv_df <- typ_indiv_df |>
+  dplyr::mutate(age_mos = as.numeric(age_mos),
+                acuity = if_else(acuity_units == "snellen", as.numeric(acuity)*30, as.numeric(acuity)))
+```
+
 
 ```{r}
 #| label: fig-typical-indiv-by-age
@@ -795,7 +867,7 @@ typ_indiv_df |>
   ggplot() +
   aes(
     x = age_mos,
-    y = mean_acuity_cyc_deg,
+    y = acuity,
     color = sub_id
   ) +
   geom_point() +
