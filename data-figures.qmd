@@ -301,7 +301,7 @@ typ_group_df |>
     alpha = 0.3,
     shape = card_type
   ) +
-  geom_jitter(height = .1, width = .1, aes(size = n_participants/10)) +
+  geom_jitter(height = .1, width = .1) +
   geom_line(aes(group = author_year), color = "gray") +
   geom_smooth(aes(group = 1), se = TRUE, weight = vars(n_participants)) +
   facet_grid(cols = vars(binoc_monoc)) +
@@ -527,6 +527,35 @@ typ_group_df |>
 
 :::
 
+#### By country
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-weight-n-country-card-type
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+
+typ_group_df |>
+  dplyr::filter(age_grp_rog <= 36,
+                !is.na(country)) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = age_grp_rog,
+    y = acuity,
+    color = country
+  ) +
+  geom_jitter(height = .1, width = .1, alpha = 0.3, aes(size = as.numeric(n_participants)/20)) +
+  geom_smooth(se = FALSE, weight = vars(n_participants), method = "lm") +
+  facet_grid(cols = vars(binoc_monoc), rows = vars(card_type)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 30)) +
+  #scale_color_viridis_d() +
+  #theme_classic() +
+  theme(legend.position = "bottom", legend.title = element_blank())
+```
+
 #### Variability
 
 We need helper functions for converting standard deviation into consistent units.
@@ -579,7 +608,7 @@ typ_group_df_sd <- typ_group_df |>
 
 typ_group_df_sd |>
   ggplot() +
-  aes(x = acuity, y = sd) +
+  aes(x = acuity, y = sd_oct) +
   geom_point()
 ```
 
@@ -595,7 +624,7 @@ typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
   aes(x = acuity, 
-      y = sd, 
+      y = sd_oct, 
       color = card_type,
       shape = card_type,
       alpha = .3) +
@@ -619,7 +648,7 @@ typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
   aes(x = acuity, 
-      y = sd, 
+      y = sd_oct, 
       color = card_type,
       shape = card_type,
       alpha = .3) +
@@ -642,7 +671,7 @@ typ_group_df_sd |>
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = age_grp_rog, y = sd, 
+  aes(x = age_grp_rog, y = sd_oct, 
       color = card_type, 
       shape = card_type,
       alpha = .3) +
@@ -656,67 +685,28 @@ typ_group_df_sd |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
-## Default style
+## Default style/color
 
 ```{r}
-#| label: fig-typical-group-sd-by-age-default
-#| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (purple circles) and TAC-II (yellow triangles)."
+#| label: fig-typical-group-sd-by-age-default-style-color
+#| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (red circles) and TAC-II (yellow triangles)."
 
 typ_group_df_sd |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = age_grp_rog, y = sd, 
+  aes(x = age_grp_rog, y = sd_oct, 
       color = card_type, 
       shape = card_type,
       alpha = .3) +
   geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
   geom_smooth(se=FALSE, weight = vars(n_participants), na.rm = TRUE) +
-  scale_color_viridis_d() +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("sd (octaves)") +
-  #theme_classic() +
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
 :::
-
-#### Tabular summaries
-
-```{r}
-#| label: tbl-typical-group-binoc
-#| tbl-cap: "Participants tested binocularly by study"
-typ_group_df_binoc <- typ_group_df |>
-  dplyr::select(author_year, age_grp_rog, binoc_monoc, n_participants) |>
-  dplyr::filter(binoc_monoc == "binoc") 
-
-typ_group_df_binoc |>
-  group_by(author_year) |>
-  dplyr::arrange(author_year) |>
-  
-  dplyr::summarise(tot_participants = sum(n_participants)) |>
-  kableExtra::kable(format = 'html') |>
-  kableExtra::kable_material()
-```
-
-There were *n*=`{r} sum(typ_group_df_binoc$n_participants)` participants tested binocularly from *n*=`{r} length(unique(typ_group_df_binoc$author_year))` studies.
-
-```{r}
-#| label: tbl-typical-group-monoc
-#| tbl-cap: "Participants tested monocularly by study"
-typ_group_df_monoc <- typ_group_df |>
-  dplyr::select(author_first, pub_year, age_grp_rog, binoc_monoc, n_participants) |>
-  dplyr::filter(binoc_monoc == "monoc") 
-
-typ_group_df_monoc |>
-  group_by(pub_year, author_first) |>
-  dplyr::arrange(pub_year) |>
-  dplyr::summarise(tot_participants = sum(n_participants)) |>
-  kableExtra::kable(format = 'html') |>
-  kableExtra::kable_material()
-```
-
-There were *n*=`{r} sum(typ_group_df_monoc$n_participants)` participants tested monocularly.
 
 ### Atypical Group
 
@@ -742,6 +732,11 @@ atyp_group_df <- atyp_group_df |>
 
 ::: {.panel-tabset}
 
+
+:::
+
+::: {.panel-tabset}
+
 ## By condition
 
 ```{r}
@@ -760,7 +755,7 @@ atyp_group_df |>
   facet_grid(cols = vars(condition)) +
   xlab("Age (mos)") +
   ylab("Mean acuity (cyc/deg)") +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
   scale_y_continuous(limits = c(0, 30))
 ```
 
@@ -785,10 +780,12 @@ atyp_group_df |>
   xlab("Age (mos)") +
   ylab("Acuity (cyc/deg)") +
   theme(legend.position = "bottom") +
-  scale_y_continuous(limits = c(0, 30))
+  scale_y_continuous(limits = c(0, 30)) +
+  theme(legend.position = "bottom", legend.title = element_blank())
 ```
 
 :::
+
 
 ### Atypical individual
 
@@ -835,7 +832,8 @@ atyp_indiv_df |>
   facet_grid(cols = vars(eye)) +
   xlab("Age (mos)") +
   ylab("Acuity (cyc/deg)") +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom") +
+  scale_y_continuous(limits = c(0, 30))
 ```
 
 ### Typical Individual
@@ -857,7 +855,6 @@ typ_indiv_df <- typ_indiv_df |>
   dplyr::mutate(age_mos = as.numeric(age_mos),
                 acuity = if_else(acuity_units == "snellen", as.numeric(acuity)*30, as.numeric(acuity)))
 ```
-
 
 ```{r}
 #| label: fig-typical-indiv-by-age

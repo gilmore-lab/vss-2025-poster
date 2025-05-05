@@ -34,10 +34,13 @@ The ultimate goal is to characterize how grating visual acuity develops.
 To achive this, we did the following:
 
 1. Searched Google Scholar for the terms “teller acuity cards”, “visual acuity cards”, or “teller cards" and found *n*=751 papers.
-2. Determined which papers had full-text or PDFs available (*n*=433).
-3. Evaluated each paper to determine which had extractable data or had summaries of data presented elsewhere (*n*=27).
+2. Determined which papers had full-text or PDFs available (*n*=432).
+3. Evaluated each paper to determine which had extractable data or had summaries of data presented elsewhere (*n*=28).
 4. Harmonized the data into a soon-to-be-shared Google sheet.
 5. Created visualizations and summaries of the data.
+
+\
+\
 
 ```{r}
 #| echo: false
@@ -48,63 +51,55 @@ plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
 ```
 
 \
+\
 
 # Results: Sources synthesized {-}
 
+- *n*=751 found
+- *n*=432 had PDFs or full-text versions available
+- *n*=28 had extractable data in a form suitable for synthesis (acuity values, age, sample size)
+- Synthesis is ongoing
+
 \
-
-|**Category** | *n*      | **Comments** |
-|----------------|:---:|----------------------|
-| Found in search | 751 | Terms: “teller acuity cards”, “visual acuity cards”, or “teller cards” |
-| Had PDFs or full text versions. | 433 | Continuing to seek additional papers |
-| No PDF/full text available | 318 | |
-| Extractable data | 27 | Includes data summarized by others for which no full-text version was available. |
-
+\
 \
 \
 \
 
 # Results: Typically developing children {-}
 
+![Number of participants by eye(s) tested for papers reporting by-condition sample sizes.](include/generated/fig-typical-group-by-paper-n-subs-1.png)
+
+Across the *n*=20 papers, *n*=5,700 participant observations are included. The *n*`s per age group are in [1, 84] with a median of *n*=20.
+
 ![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-weight-n-no-classic-1.png)
 
 \
-
-![Number of participants by eye(s) tested for papers reporting by-condition sample sizes.](include/generated/fig-typical-group-by-paper-n-subs-1.png)
-
-Across the *n*=19 papers, *n*=5,212 participant observations are included. The *n*`s per age group are in [1, 84] with a median of *n*=20.
-
 \
 \
 \
 \
 \
 
-![Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits.](include/generated/fig-typical-group-LT3y-by-card-type-weight-n-no-classic-1.png)
+![Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits.](include/generated/fig-typical-group-LT3y-by-card-type-weight-n-no-classic-no-viridis-1.png)
 
 \
 
-![Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (purple circles) and TAC-II (yellow triangles).](include/generated/fig-typical-group-sd-by-age-default-1.png)
+![Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (red circles) and TAC-II (cyan triangles).](include/generated/fig-typical-group-sd-by-age-default-style-color-1.png)
 
 \
 \
 
 # Results: Atypically developing children {-}
 
-![Atypical children caption.](include/generated/fig-atypical-group-by-age-eye-1.png)
+![Developmental group mean acuity patterns for atypically developing children with varied diagnoses: Retinopathy of Prematurity (ROP), macular edema + ROP, and preterm-birth.](include/generated/fig-atypical-group-by-age-1.png)
 
 # Conclusions {-}
 
 ::: {.block fill="luma(210)" inset="10pt" radius="15pt" stroke="5pt + blue"}
 
 - Synthesizing evidence about core facets of human visual development is important and illuminating.
-
-- Variation in mean acuity thresholds at different ages and by card type pose challenges for norm or standard-setting.
-
+- Variation in mean acuity thresholds at different ages and by card type pose challenges for norm and standard-setting [@Neijzen2025-ak].
 - Idiosyncratic practices for reporting data in published papers make evidence synthesis challenging, even when researchers use a common method.
-
-- Future work will involve: 1. Acquiring papers that did not have full text versions available and incorporating their findings, and 2. Contacting individual researchers to seek unpublished datasets.
-
-- Vision scientists should adopt open data sharing practices more widely and should curate shared data in ways that make synthesis and aggregation easier.
-
+- Vision scientists should adopt open data sharing practices more widely and should curate shared data in ways that make synthesis, aggregation, and reuse easier.
 :::
