@@ -31,23 +31,22 @@ The ultimate goal is to characterize how grating visual acuity develops.
 
 # Methods {-}
 
-To achive this, we did the following:
+To achieve this, we did the following:
 
-1. Searched Google Scholar for the terms “teller acuity cards”, “visual acuity cards”, or “teller cards" and found *n*=751 papers.
-2. Determined which papers had full-text or PDFs available (*n*=432).
-3. Evaluated each paper to determine which had extractable data or had summaries of data presented elsewhere (*n*=28).
+1. Searched Google Scholar for the terms “teller acuity cards”, “visual acuity cards”, or “teller cards".
+2. Determined which papers had full-text or PDFs available.
+3. Evaluated each paper to determine whether it had extractable data or contained summaries of data presented elsewhere.
 4. Harmonized the data into a soon-to-be-shared Google sheet.
 5. Created visualizations and summaries of the data.
 
 \
-\
 
 ```{r}
 #| echo: false
-#| label: fig-qr-code-project-site
-#| fig-cap: "QR Code for Project Site: https://gilmore-lab.github.io/visual-acuity"
+#| label: fig-qr-code-poster
+#| fig-cap: "QR code for poster"
 
-plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
+plot(qrcode::qr_code("https://gilmore-lab.github.io/vss-2025-poster/vss-2025-poster.pdf"))
 ```
 
 \
@@ -72,20 +71,19 @@ plot(qrcode::qr_code("https://gilmore-lab.github.io/visual-acuity"))
 
 Across the *n*=20 papers, *n*=5,700 participant observations are included. The *n*`s per age group are in [1, 84] with a median of *n*=20.
 
-![Mean or median visual acuity by age (mos) across *n*=19 papers. Binocular values (left column); monocular values (right column)](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-weight-n-no-classic-1.png)
+![Mean or median visual acuity (in cyc/deg) by age (in mos) across *n*=20 papers. Binocular values (left column); monocular values (right column). Loess fit with SEM in blue.](include/generated/fig-typical-group-by-age-paper-group-trend-scaled-weight-n-no-classic-1.png)
 
 \
 \
 \
 \
 \
+
+![Developmental time course of grating acuity (in cyc/deg) for typically developing children (0-36 mos) as assessed by two types of Teller Acuity Cards, TAC-I (red circles) and TAC-II (cyan triangles) with loess fits.](include/generated/fig-typical-group-LT3y-by-card-type-weight-n-no-classic-no-viridis-1.png)
+
 \
 
-![Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I (purple circles) and TAC-II (yellow triangles) and *loess* fits.](include/generated/fig-typical-group-LT3y-by-card-type-weight-n-no-classic-no-viridis-1.png)
-
-\
-
-![Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (red circles) and TAC-II (cyan triangles).](include/generated/fig-typical-group-sd-by-age-default-style-color-1.png)
+![Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children (0-36 mos) as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (red circles) and TAC-II (cyan triangles).](include/generated/fig-typical-group-sd-by-age-default-style-color-1.png)
 
 \
 \
@@ -99,7 +97,7 @@ Across the *n*=20 papers, *n*=5,700 participant observations are included. The *
 ::: {.block fill="luma(210)" inset="10pt" radius="15pt" stroke="5pt + blue"}
 
 - Synthesizing evidence about core facets of human visual development is important and illuminating.
-- Variation in mean acuity thresholds at different ages and by card type pose challenges for norm and standard-setting [@Neijzen2025-ak].
+- Variation in mean acuity thresholds at different ages and by card type pose challenges for norm-setting [e.g., @Neijzen2025-ak].
 - Idiosyncratic practices for reporting data in published papers make evidence synthesis challenging, even when researchers use a common method.
 - Vision scientists should adopt open data sharing practices more widely and should curate shared data in ways that make synthesis, aggregation, and reuse easier.
 :::

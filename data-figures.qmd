@@ -135,9 +135,6 @@ typ_group_df <- typ_group_df |>
   )
 ```
 
-
-::: {.panel-tabset}
-
 ## Standard colors
 
 ```{r}
@@ -188,11 +185,8 @@ typ_group_df |>
   scale_colour_viridis_d()
 ```
 
-:::
-
-::: {.panel-tabset}
-
 ## Indiv + Trend
+
 Let's try a version where we highlight the individual studies *and* the group trends.
 
 ```{r}
@@ -311,11 +305,7 @@ typ_group_df |>
   theme(legend.position = "none")
 ```
 
-:::
-
 Generate a comparable figure with the n's.
-
-::: {.panel-tabset}
 
 ## Classic
 
@@ -375,8 +365,6 @@ typ_group_df |>
   theme(legend.position = "none") 
 ```
 
-:::
-
 These *n*=`{r} length(unique(typ_group_df$author_year))` papers represent *n*=`{r} sum(typ_group_df$n_participants, na.rm = TRUE)` participant observations. The *n*'s per age group range are in [`{r} min(typ_group_df$n_participants, na.rm = TRUE)`, `{r} max(typ_group_df$n_participants, na.rm = TRUE)`], with a median of `{r} median(typ_group_df$n_participants, na.rm = TRUE)`.
 
 ```{r}
@@ -401,11 +389,7 @@ typ_group_df |>
     theme_classic()
 ```
 
-::: {.panel-tabset}
-
 ##### Three and younger
-
-::: {.panel-tabset}
 
 ## Unweighted Viridis
 
@@ -512,7 +496,7 @@ typ_group_df |>
     color = card_type,
     shape = card_type,
   ) +
-  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
+  geom_jitter(height = .1, width = .1) +
   geom_smooth(se = TRUE, weight = vars(n_participants)) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
@@ -524,8 +508,6 @@ typ_group_df |>
   #theme_classic() +
   theme(legend.position = "none", legend.title = element_blank())
 ```
-
-:::
 
 #### By country
 
@@ -592,8 +574,6 @@ c(a,b,k1)
 ```
 
 Many of the studies report variability in terms of octaves.
-
-::: {.panel-tabset}
 
 ## SD by acuity
 
@@ -692,21 +672,22 @@ typ_group_df_sd |>
 #| fig-cap: "Relationship between the standard deviation (SD in octaves) of estimated visual acuity (cyc/deg) observed in typically developing children as assessed by Teller Acuity Cards and child age in months for both card types: TAC-I (red circles) and TAC-II (yellow triangles)."
 
 typ_group_df_sd |>
+  dplyr::filter(age_grp_rog <= 36) |>
   mutate(card_type = toupper(card_type)) |>
   ggplot() +
-  aes(x = age_grp_rog, y = sd_oct, 
-      color = card_type, 
-      shape = card_type,
-      alpha = .3) +
-  geom_jitter(height = .1, width = .1, aes(size = n_participants/20)) +
-  geom_smooth(se=FALSE, weight = vars(n_participants), na.rm = TRUE) +
+  aes(
+    x = age_grp_rog,
+    y = sd_oct,
+    color = card_type,
+    shape = card_type
+  ) +
+  geom_jitter(height = .1, width = .1) +
+  geom_smooth(se = FALSE, na.rm = TRUE) +
   facet_grid(cols = vars(binoc_monoc)) +
   xlab("Age (mos)") +
   ylab("sd (octaves)") +
   theme(legend.position = "none", legend.title = element_blank())
 ```
-
-:::
 
 ### Atypical Group
 
@@ -729,13 +710,6 @@ atyp_group_df <- atyp_group_df |>
   dplyr::mutate(acuity = if_else(acuity_units == "cyc_deg", acuity, 
                                               logMAR_to_cyc_per_deg(acuity)))
 ```
-
-::: {.panel-tabset}
-
-
-:::
-
-::: {.panel-tabset}
 
 ## By condition
 
@@ -783,8 +757,6 @@ atyp_group_df |>
   scale_y_continuous(limits = c(0, 30)) +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
-
-:::
 
 
 ### Atypical individual
