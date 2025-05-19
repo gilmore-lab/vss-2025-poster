@@ -115,7 +115,7 @@ Teller1986-oc,Teller,1986,Teller1986,NA,NA,table_01,36,mos,36,36,binoc,OU,9,NA,N
 Teller1986-oc,Teller,1986,Teller1986,NA,NA,table_01,36,mos,36,36,monoc,NA,9,NA,NA,25.3,cyc_deg,mean,NA,NA,NA,0.5,octave,us,tac_i
 Courage1990-xe,Courage,1990,Courage1990,1,NA,table_01,0,mos,0,0,binoc,OU,20,38,NA,0.9,cyc_deg,mean,NA,NA,NA,0.9,octave,canada,tac_i
 Dobson1987-cs,Dobson,1987,Dobson1987,2,Courage1990-xe,NA,0,mos,0,0,binoc,OU,30,38,NA,0.7,cyc_deg,mean,NA,NA,NA,0.7,octave,us,tac_i
-Brown1986-th,Brown,1986,Brown1986,3,Courage1990-xe,table_01,0,mos,0,0,binoc,OU,40,38,NA,1,cyc_deg,mean,NA,NA,NA,1,octave,us,tac_i
+Brown1986-th,Brown,1986,Brown1986,3,Courage1990-xe,table_01,0,mos,0,0,binoc,OU,40,38,NA,1,cyc_deg,mean,NA,NA,NA,1,octave,japan,custom_card
 Courage1990-xe,Courage,1990,Courage1990,1,NA,table_01,1,mos,1,1,binoc,OU,20,38,NA,1.1,cyc_deg,mean,NA,NA,NA,1.1,octave,canada,tac_i
 McDonald1985-sp,McDonald,1985,McDonald1985,4,Courage1990-xe,table_01,1,mos,1,1,binoc,OU,8,38,NA,1.1,cyc_deg,mean,NA,NA,NA,1.1,octave,us,tac_i
 McDonald1986-tg,McDonald,1986a,McDonald1986a,5,Courage1990-xe,table_01,1,mos,1,1,binoc,OU,6,38,NA,0.8,cyc_deg,mean,NA,NA,NA,0.7,octave,us,tac_i

@@ -509,6 +509,76 @@ typ_group_df |>
   theme(legend.position = "none", legend.title = element_blank())
 ```
 
+Dennis Pelli and another visitor at VSS recommended we plot these in log coordinates.
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-weight-n-no-classic-no-viridis-log
+#| fig-cap: "Developmental time course of mean grating acuity (in cyc/deg) for typically developing children as assessed by two types of Teller Acuity Cards, TAC-I and TAC-II. *loess* fit added."
+
+typ_group_df |>
+  dplyr::filter(age_grp_rog <= 36) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = log2(age_grp_rog),
+    y = log2(acuity),
+    color = card_type,
+    shape = card_type,
+  ) +
+  geom_jitter(height = .1, width = .1) +
+  geom_smooth(se = TRUE, weight = vars(n_participants), method = "lm") +
+  facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (log(cyc/deg))") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 5)) +
+  #scale_color_viridis_d() +
+  #theme_classic() +
+  theme(legend.position = "none", legend.title = element_blank())
+```
+
+Let's try a version of this where we plot the sd.
+
+```{r}
+#| label: fig-typical-group-LT3y-by-card-type-log-log-sd
+
+typ_group_df_sd <- typ_group_df |>
+  dplyr::mutate(log_cpd = log2(acuity),
+                log_mos = log2(age_grp_rog)) |>
+  dplyr::filter(sd_units %in% c("cyc_deg", "octave"),
+                !is.na(sd)) |>
+  dplyr::mutate(sd_oct = if_else(sd_units == "cyc_deg", log2(sd), sd)) |>
+  dplyr::mutate(log_cpd_min = log_cpd - sd_oct),
+                log_cpd_max = log_cpd + sd_oct)
+
+typ_group_df_sd |>
+  #dplyr::filter(age_grp_rog <= 36) |>
+  mutate(card_type = toupper(card_type)) |>
+  ggplot() +
+  aes(
+    x = log_mos,
+    y = log_cpd,
+    color = card_type
+  ) +
+  # https://stackoverflow.com/questions/35654364/ggplot-jitter-geom-errorbar
+  geom_pointrange(aes(ymin = log_cpd_min, ymax = log_cpd_max), 
+                  position = position_jitter(width = 0.2),
+                  linetype = "dotted") +
+  #geom_jitter(height = .1, width = .1) +
+  geom_smooth(se = TRUE, weight = vars(n_participants), method = "lm") +
+  #facet_grid(cols = vars(binoc_monoc)) +
+  xlab("Age (mos)") +
+  ylab("Mean acuity (cyc/deg)") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  #scale_y_continuous(limits = c(-1, 5), labels = c(0.5, 0, 2, 4, 8, 16, 32)) +
+  #scale_x_continuous(limits = c(0, 5), labels = c(0, 2, 4, 8, 16, 32))
+  theme(legend.position = "none", legend.title = element_blank()) +
+  theme_classic()
+```
+
+
 #### By country
 
 ```{r}
@@ -537,6 +607,8 @@ typ_group_df |>
   #theme_classic() +
   theme(legend.position = "bottom", legend.title = element_blank())
 ```
+
+
 
 #### Variability
 
